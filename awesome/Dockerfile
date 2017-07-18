@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM debian:stretch
 
 RUN apt-get update && \
     apt-get install -y git wget gcc g++ && \
@@ -9,11 +9,13 @@ RUN apt-get update && \
 # https://launchpad.net/~george-edison55/+archive/ubuntu/cmake-3.x
 
 # To get add-apt-repository command work
-RUN apt-get install -y software-properties-common python-software-properties
+RUN apt-get install -y software-properties-common 
 
-RUN add-apt-repository -y ppa:george-edison55/cmake-3.x && \
-    apt-get update && \
-    apt-get install -y cmake
+RUN apt install -y cmake
+
+# RUN add-apt-repository -y ppa:george-edison55/cmake-3.x && \
+#     apt-get update && \
+#     apt-get install -y cmake
 
 # All next directives are from .travis.yml file in awesome repository
 ENV LUA 5.2
@@ -37,8 +39,10 @@ RUN apt-get install -y dbus-x11 xterm xdotool xterm xvfb
 # Need xorg-macros
 RUN apt-get install -y xutils-dev libtool
 RUN cd /root && \
-    git clone --recursive https://github.com/Airblader/xcb-util-xrm.git && \
+    git clone https://github.com/Airblader/xcb-util-xrm.git && \
     cd xcb-util-xrm && \
+    sed 's, [^ ]*anongit.freedesktop.org/xcb/util-common-m4.git, https://anongit.freedesktop.org/git/xcb/util-common-m4.git/,g' -i .git/config .gitmodules && \
+    git submodule update --init && \
     ./autogen.sh --prefix=/usr && \
     make && \
     sudo make install
@@ -70,17 +74,16 @@ RUN luarocks install ldoc && \
     luarocks install lua-discount
 
 RUN cd /root && \
-    wget https://github.com/awesomeWM/awesome/releases/download/v4.0/awesome-4.0.tar.xz && \
-    tar xvf awesome-4.0.tar.xz && \
-    cd awesome-4.0 && \
+    git clone https://github.com/awesomeWM/awesome.git awesome-4.1/ && \
+    cd awesome-4.1/ && \
     make package
 
 RUN apt-get -y install devscripts
 COPY contents /root/awesome-deb/contents/
 COPY debian /root/awesome-deb/debian/
-RUN cd /root/awesome-4.0/ && \
+RUN cd /root/awesome-4.1/ && \
     cd $(find -iname '.build*') && \
-    dpkg-deb -x ./awesome-4.0.0.0-Linux.deb /root/wrong-deb && \
+    dpkg-deb -x ./awesome-4.1.0.0-Linux.deb /root/wrong-deb && \
     cd /root/awesome-deb && \
     cp -r /root/wrong-deb/usr/local/etc/* ./contents/etc/ && \
     mkdir ./contents/usr/bin && \
@@ -92,6 +95,6 @@ RUN cd /root/awesome-4.0/ && \
     debuild -uc -us
 
 # After that you can use
-# docker cp {container_id}:/root/awesome_4.0.0-0~xenial0_amd64.deb .
-# sudo dpkg -i ./awesome_4.0.0-0~xenial0_amd64.deb
+# docker cp {container_id}:/root/awesome_4.1.0-0~xenial0_amd64.deb .
+# sudo dpkg -i ./awesome_4.1.0-0~xenial0_amd64.deb
 # sudo apt-get -f install
