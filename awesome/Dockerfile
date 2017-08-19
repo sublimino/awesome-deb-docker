@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 
 RUN apt-get update && \
     apt-get install -y git wget gcc g++ && \
@@ -9,7 +9,7 @@ RUN apt-get update && \
 # https://launchpad.net/~george-edison55/+archive/ubuntu/cmake-3.x
 
 # To get add-apt-repository command work
-RUN apt-get install -y software-properties-common 
+RUN apt-get install -y software-properties-common
 
 RUN apt install -y cmake
 
@@ -45,7 +45,7 @@ RUN cd /root && \
     git submodule update --init && \
     ./autogen.sh --prefix=/usr && \
     make && \
-    sudo make install
+    make install
 
 # Install Lua (per env).
 RUN apt-get install -y lib${LUANAME}-dev ${LUANAME}
@@ -57,7 +57,7 @@ RUN cd /root && \
     (cd luarocks-2.3.0 \
       && ./configure --lua-version=$LUA --with-lua-include=${LUAINCLUDE} ${LUAROCKS_ARGS} \
       && make build \
-      && sudo make install)
+      && make install)
 
 # lgi.
 RUN apt-get install -y gir1.2-pango-1.0 libgirepository1.0-dev && \
@@ -74,16 +74,17 @@ RUN luarocks install ldoc && \
     luarocks install lua-discount
 
 RUN cd /root && \
-    git clone https://github.com/awesomeWM/awesome.git awesome-4.1/ && \
-    cd awesome-4.1/ && \
+    git clone https://github.com/awesomeWM/awesome.git awesome-4.2/ && \
+    cd awesome-4.2/ && \
+    git checkout v4.2 && \
     make package
 
 RUN apt-get -y install devscripts
 COPY contents /root/awesome-deb/contents/
 COPY debian /root/awesome-deb/debian/
-RUN cd /root/awesome-4.1/ && \
-    cd $(find -iname '.build*') && \
-    dpkg-deb -x ./awesome-4.1.0.0-Linux.deb /root/wrong-deb && \
+RUN cd /root/awesome-4.2/ && \
+    cd build && \
+    dpkg-deb -x ./awesome-4.2.0.0-Linux.deb /root/wrong-deb && \
     cd /root/awesome-deb && \
     cp -r /root/wrong-deb/usr/local/etc/* ./contents/etc/ && \
     mkdir ./contents/usr/bin && \
@@ -94,7 +95,4 @@ RUN cd /root/awesome-4.1/ && \
     cp -r /root/wrong-deb/usr/local/share ./contents/usr/local/ && \
     debuild -uc -us
 
-# After that you can use
-# docker cp {container_id}:/root/awesome_4.1.0-0~xenial0_amd64.deb .
-# sudo dpkg -i ./awesome_4.1.0-0~xenial0_amd64.deb
-# sudo apt-get -f install
+# See README.md for installation instructions

@@ -1,5 +1,5 @@
-awesome (4.1.0-0~stretch) stretch; urgency=low
+awesome (4.2.0-0~buster) buster; urgency=low
 
-  * Built 4.1 awesome.
+  * Built 4.2 awesome.
 
- -- Igor Kostromin <elwood.su@gmail.com>  Thu, 05 Jan 2017 09:42:23 +0000
+ -- Andrew MArtin <sublimino@gmail.com> Sat, 19 Jul 2017 12:32:14 +0000
