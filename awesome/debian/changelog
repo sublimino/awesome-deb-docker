@@ -1,5 +1,5 @@
-awesome (4.2.0-0~buster) buster; urgency=low
+awesome (4.2.0-1~buster) buster; urgency=low
 
-  * Built 4.2 awesome.
+  * Built 4.2 awesome from awesome git336-gd14e2844
 
- -- Andrew MArtin <sublimino@gmail.com> Sat, 19 Jul 2017 12:32:14 +0000
+ -- Andrew Martin <sublimino@gmail.com> Mon, 16 Jul 2018 21:21:36 +0000

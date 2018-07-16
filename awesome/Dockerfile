@@ -76,7 +76,6 @@ RUN luarocks install ldoc && \
 RUN cd /root && \
     git clone https://github.com/awesomeWM/awesome.git awesome-4.2/ && \
     cd awesome-4.2/ && \
-    git checkout v4.2 && \
     make package
 
 RUN apt-get -y install devscripts
@@ -84,7 +83,8 @@ COPY contents /root/awesome-deb/contents/
 COPY debian /root/awesome-deb/debian/
 RUN cd /root/awesome-4.2/ && \
     cd build && \
-    dpkg-deb -x ./awesome-4.2.0.0-Linux.deb /root/wrong-deb && \
+    ls -lasp . && \
+    dpkg-deb -x ./awesome-4.2.0.0~git336-gd14e2844-Linux.deb /root/wrong-deb && \
     cd /root/awesome-deb && \
     cp -r /root/wrong-deb/usr/local/etc/* ./contents/etc/ && \
     mkdir ./contents/usr/bin && \
